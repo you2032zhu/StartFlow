@@ -1,0 +1,26 @@
+{
+  "FormatVersion": 1,
+  "Settings": { "Language": "zh-CN", "Theme": "System", "CloseBehavior": "Ask", "ProjectUrl": "https://github.com/you2032zhu/StartFlow" },
+  "Plans": [
+    {
+      "Id": "e85649d7-aa11-4d1e-afce-c8dd31814831",
+      "Name": "示例：工作（先核对路径）",
+      "Mode": "Sequential",
+      "InitialDelaySeconds": 5,
+      "Items": [
+        { "Id": "0a766535-7c2e-490d-8141-78337fcce071", "Name": "示例网站", "Kind": "Website", "Target": "https://example.com", "Enabled": true, "Seconds": 2, "Group": "网站" },
+        { "Id": "d0066c27-2551-4908-887a-cba16a6c1206", "Name": "虚构文档（需要修改）", "Kind": "File", "Target": "C:\\ExampleUser\\Documents\\示例 文件.docx", "Enabled": false, "Seconds": 3, "Group": "文件", "Notes": "这是虚构路径。导入不会运行，请编辑后再启用。" }
+      ]
+    },
+    {
+      "Id": "918d6ce6-a526-490f-928e-5a2b0fb0ea39",
+      "Name": "示例：时间轴",
+      "Mode": "Timeline",
+      "InitialDelaySeconds": 0,
+      "Items": [
+        { "Id": "0ee429b3-63b7-443f-bcbe-7e2f75317a5d", "Name": "第 10 秒的网站", "Kind": "Website", "Target": "https://example.org", "Enabled": true, "Seconds": 10 },
+        { "Id": "98de0e2d-184d-4324-8a5d-e17f6c82189f", "Name": "无副作用命令示例", "Kind": "Command", "Shell": "PowerShell", "Target": "Write-Output 'Hello StartFlow'", "Enabled": false, "Seconds": 20, "Notes": "即使此示例无副作用，导入也不执行。由用户明确启用并运行。" }
+      ]
+    }
+  ]
+}

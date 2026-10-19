@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType><TargetFramework>net10.0-windows</TargetFramework><UseWPF>true</UseWPF><UseWindowsForms>true</UseWindowsForms>
+    <AssemblyName>StartFlow</AssemblyName><RootNamespace>StartFlow.App</RootNamespace><ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>Assets/StartFlow.ico</ApplicationIcon>
+    <NoWarn>$(NoWarn);WFAC010</NoWarn><ImplicitUsings>disable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup><ProjectReference Include="../StartFlow.Windows/StartFlow.Windows.csproj" /></ItemGroup>
+  <ItemGroup><Content Include="Resources/strings.json" CopyToOutputDirectory="PreserveNewest" /><Resource Include="Assets/StartFlow.ico" /></ItemGroup>
+</Project>

@@ -1,0 +1,43 @@
+<Window x:Class="StartFlow.App.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:local="clr-namespace:StartFlow.App" Style="{StaticResource {x:Type Window}}" Title="{DynamicResource AppTitle}" Width="1240" Height="800" MinWidth="960" MinHeight="620" WindowStartupLocation="CenterScreen" Icon="Assets/StartFlow.ico" AllowDrop="True" Drop="FilesDropped" Closing="OnClosing">
+ <Window.Resources><local:EnumTextConverter x:Key="EnumText"/><local:IconConverter x:Key="ItemIcon"/></Window.Resources>
+ <Grid Background="{DynamicResource BackgroundBrush}">
+  <Grid.ColumnDefinitions><ColumnDefinition Width="240"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+  <Border Background="{DynamicResource SurfaceBrush}" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="0,0,1,0">
+   <DockPanel Margin="16,22,16,16">
+    <StackPanel DockPanel.Dock="Top"><TextBlock Text="启序" FontSize="29" FontWeight="SemiBold"/><TextBlock Text="STARTFLOW" Foreground="{DynamicResource MutedBrush}" FontSize="11" Margin="2,2,0,28"/><TextBlock Text="{DynamicResource Plans}" Foreground="{DynamicResource MutedBrush}" Margin="9,0,0,10"/><Button Content="{DynamicResource NewPlan}" Command="{Binding NewPlanCommand}" HorizontalAlignment="Stretch"/></StackPanel>
+    <StackPanel DockPanel.Dock="Bottom" Margin="0,16,0,0"><Button Content="{DynamicResource ChooseRun}" Command="{Binding ChooseCommand}"/><Button Content="{DynamicResource Settings}" Command="{Binding SettingsCommand}"/><Button Content="{DynamicResource Help}" Command="{Binding HelpCommand}"/><TextBlock Text="{Binding VersionLabel}" FontSize="11" Foreground="{DynamicResource MutedBrush}" HorizontalAlignment="Center" Margin="0,16,0,0"/></StackPanel>
+    <ListBox ItemsSource="{Binding Plans}" SelectedItem="{Binding SelectedPlan}" Margin="0,12,0,0">
+     <ListBox.ItemTemplate><DataTemplate><StackPanel><TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/><TextBlock Text="{Binding Summary}" Foreground="{DynamicResource MutedBrush}" FontSize="12" Margin="0,5,0,0"/></StackPanel></DataTemplate></ListBox.ItemTemplate>
+    </ListBox>
+   </DockPanel>
+  </Border>
+  <Grid Grid.Column="1" Margin="28,23,28,20">
+   <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/><RowDefinition Height="190"/></Grid.RowDefinitions>
+   <DockPanel><StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Top"><Button Content="{DynamicResource PlanOptions}" Command="{Binding PlanOptionsCommand}"/><Button Content="{DynamicResource RunPlan}" Style="{StaticResource PrimaryButton}" Command="{Binding RunCommand}"/><Button Content="{DynamicResource Stop}" Command="{Binding StopCommand}"/></StackPanel><StackPanel><TextBlock Text="{Binding Heading}" FontSize="27" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/><TextBlock Text="{Binding PlanSummary}" Foreground="{DynamicResource MutedBrush}" Margin="0,6,0,16"/></StackPanel></DockPanel>
+   <Border Grid.Row="1" Background="{DynamicResource SelectionBrush}" CornerRadius="7" Padding="14,10" Margin="0,0,0,16"><TextBlock Text="{Binding StatusText}" TextWrapping="Wrap"/></Border>
+   <DockPanel Grid.Row="2" Margin="0,0,0,10"><StackPanel Orientation="Horizontal" DockPanel.Dock="Right"><Button Content="{DynamicResource AddFiles}" Command="{Binding AddFilesCommand}"/><Button Content="{DynamicResource Installed}" Command="{Binding InstalledCommand}"/><Button Content="{DynamicResource AddItem}" Command="{Binding AddCommand}" Style="{StaticResource PrimaryButton}"/></StackPanel><TextBox Text="{Binding Search, UpdateSourceTrigger=PropertyChanged}" ToolTip="{DynamicResource SearchHint}" AutomationProperties.Name="{DynamicResource SearchHint}" MinWidth="100" Margin="0,3,12,3" VerticalContentAlignment="Center"/></DockPanel>
+   <Border Grid.Row="3" Background="{DynamicResource SurfaceBrush}" CornerRadius="8" BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" ClipToBounds="True">
+    <Grid>
+     <DataGrid x:Name="ItemsGrid" ItemsSource="{Binding ItemsView}" SelectionMode="Extended" SelectionChanged="SelectionChanged" MouseDoubleClick="EditDoubleClick" PreviewMouseLeftButtonDown="DragStart" MouseMove="DragMove" Drop="ReorderDrop" AllowDrop="True" KeyDown="GridKeyDown">
+      <DataGrid.Columns>
+       <DataGridTemplateColumn Width="46"><DataGridTemplateColumn.CellTemplate><DataTemplate><CheckBox IsChecked="{Binding Enabled, UpdateSourceTrigger=PropertyChanged}" AutomationProperties.Name="{DynamicResource Enabled}" HorizontalAlignment="Center"/></DataTemplate></DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
+       <DataGridTemplateColumn Width="42"><DataGridTemplateColumn.CellTemplate><DataTemplate><Image Source="{Binding Converter={StaticResource ItemIcon}}" Width="24" Height="24"/></DataTemplate></DataGridTemplateColumn.CellTemplate></DataGridTemplateColumn>
+       <DataGridTextColumn Header="{DynamicResource Name}" Binding="{Binding Name}" Width="1.2*" IsReadOnly="True"/>
+       <DataGridTextColumn Header="{DynamicResource Type}" Binding="{Binding Kind, Converter={StaticResource EnumText}}" Width="105" IsReadOnly="True"/>
+       <DataGridTextColumn Header="{DynamicResource SecondsShort}" Binding="{Binding Seconds}" Width="85" IsReadOnly="True"/>
+       <DataGridTextColumn Header="{DynamicResource Group}" Binding="{Binding Group}" Width="90" IsReadOnly="True"/>
+       <DataGridTextColumn Header="{DynamicResource Target}" Binding="{Binding Target}" Width="1.4*" IsReadOnly="True"/>
+      </DataGrid.Columns>
+      <DataGrid.GroupStyle><GroupStyle><GroupStyle.HeaderTemplate><DataTemplate><TextBlock Text="{Binding Name}" FontWeight="SemiBold" Margin="12"/></DataTemplate></GroupStyle.HeaderTemplate></GroupStyle></DataGrid.GroupStyle>
+     </DataGrid>
+     <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" IsHitTestVisible="False"><StackPanel.Style><Style TargetType="StackPanel"><Setter Property="Visibility" Value="Collapsed"/><Style.Triggers><DataTrigger Binding="{Binding ItemCount}" Value="0"><Setter Property="Visibility" Value="Visible"/></DataTrigger></Style.Triggers></Style></StackPanel.Style><TextBlock Text="{DynamicResource EmptyTitle}" FontSize="22" HorizontalAlignment="Center"/><TextBlock Text="{DynamicResource EmptyHint}" Foreground="{DynamicResource MutedBrush}" TextAlignment="Center" TextWrapping="Wrap" MaxWidth="390" Margin="10,12"/></StackPanel>
+    </Grid>
+   </Border>
+   <WrapPanel Grid.Row="4" Margin="0,8,0,8"><Button Content="{DynamicResource Edit}" Command="{Binding EditCommand}"/><Button Content="{DynamicResource TestItem}" Command="{Binding TestCommand}"/><Button Content="{DynamicResource BatchActions}" Command="{Binding BatchCommand}"/><Button Content="{DynamicResource MoveUp}" Command="{Binding UpCommand}"/><Button Content="{DynamicResource MoveDown}" Command="{Binding DownCommand}"/><Button Content="{DynamicResource GroupView}" Command="{Binding GroupCommand}"/><Button Content="{DynamicResource RetryFailed}" Command="{Binding RetryCommand}"/></WrapPanel>
+   <TabControl Grid.Row="5">
+    <TabItem Header="{DynamicResource RecentResults}"><DataGrid ItemsSource="{Binding Results}" IsReadOnly="True" RowHeight="37"><DataGrid.Columns><DataGridTextColumn Header="{DynamicResource Plan}" Binding="{Binding Plan}" Width="120"/><DataGridTextColumn Header="{DynamicResource Name}" Binding="{Binding Item}" Width="130"/><DataGridTextColumn Header="{DynamicResource Status}" Binding="{Binding Status, Converter={StaticResource EnumText}}" Width="120"/><DataGridTextColumn Header="{DynamicResource Attempts}" Binding="{Binding Attempts}" Width="60"/><DataGridTextColumn Header="{DynamicResource Started}" Binding="{Binding StartedAt, StringFormat=HH:mm:ss}" Width="80"/><DataGridTextColumn Header="{DynamicResource Detail}" Binding="{Binding DisplayMessage}" Width="*"/></DataGrid.Columns></DataGrid></TabItem>
+    <TabItem Header="{DynamicResource Queue}"><ListBox ItemsSource="{Binding QueueLabels}"/></TabItem>
+   </TabControl>
+  </Grid>
+ </Grid>
+</Window>

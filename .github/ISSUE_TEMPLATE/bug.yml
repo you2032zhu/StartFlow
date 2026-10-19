@@ -1,0 +1,24 @@
+name: Bug report / 问题报告
+description: Describe an actual problem without private paths or secrets.
+body:
+  - type: textarea
+    id: behavior
+    attributes:
+      label: Expected and actual behavior / 预期与实际表现
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps / 复现步骤
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: StartFlow version, Windows build, portable or installed
+  - type: textarea
+    id: details
+    attributes:
+      label: Error text or redacted screenshot / 错误信息或脱敏截图
+      description: Do not attach unredacted configuration or credentials.

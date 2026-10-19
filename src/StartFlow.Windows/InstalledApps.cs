@@ -60,17 +60,7 @@ public static class InstalledApps
         }
         return entries.DistinctBy(e => (e.Kind, e.Target, e.Name)).OrderBy(e => e.Name, StringComparer.CurrentCultureIgnoreCase).ToList();
     });
-    public static ShortcutDetails ReadShortcut(string path)
-    {
-        dynamic shell = Activator.CreateInstance(Type.GetTypeFromProgID("WScript.Shell")!)!;
-        try
-        {
-            dynamic link = shell.CreateShortcut(path);
-            try { return new((string)link.TargetPath, (string)link.Arguments, (string)link.WorkingDirectory, (string)link.IconLocation); }
-            finally { Marshal.FinalReleaseComObject(link); }
-        }
-        finally { Marshal.FinalReleaseComObject(shell); }
-    }
+    public static ShortcutDetails ReadShortcut(string path) => WindowsShortcut.Read(path);
     public static StartupItem FromPath(string path)
     {
         var ext = Path.GetExtension(path).ToLowerInvariant();

@@ -186,11 +186,16 @@ internal static class Program
     }
     private static Task Shortcut()
     {
-        var path = Path.Combine(root, "test.lnk"); dynamic shell = Activator.CreateInstance(Type.GetTypeFromProgID("WScript.Shell")!)!;
-        try { dynamic link = shell.CreateShortcut(path); try { link.TargetPath = Environment.ProcessPath!; link.Arguments = "--test \"中文 空格\""; link.WorkingDirectory = root; link.Save(); } finally { Marshal.FinalReleaseComObject(link); } } finally { Marshal.FinalReleaseComObject(shell); }
+        var path = Path.Combine(root, "中文 快捷方式.lnk");
+        var working = Path.Combine(root, "中文 工作目录"); Directory.CreateDirectory(working);
+        WindowsShortcut.Write(path, Environment.ProcessPath!, "--test \"中文 空格\"", working);
         var read = InstalledApps.ReadShortcut(path);
         Assert(read.Arguments == "--test \"中文 空格\"", $"Shortcut arguments changed: [{read.Arguments}]");
-        Assert(Core.Validation.NormalizePath(read.WorkingDirectory) == Core.Validation.NormalizePath(root), $"Shortcut working directory changed: expected [{root}], actual [{read.WorkingDirectory}]");
+        Assert(Core.Validation.NormalizePath(read.WorkingDirectory) == Core.Validation.NormalizePath(working), $"Shortcut working directory changed: expected [{working}], actual [{read.WorkingDirectory}]");
+        Assert(Core.Validation.NormalizePath(read.Target) == Core.Validation.NormalizePath(Environment.ProcessPath!));
+        var legacyPath = Path.Combine(root, "legacy.lnk"); dynamic shell = Activator.CreateInstance(Type.GetTypeFromProgID("WScript.Shell")!)!;
+        try { dynamic link = shell.CreateShortcut(legacyPath); try { link.TargetPath = Environment.ProcessPath!; link.Arguments = "--legacy \"quoted argument\""; link.WorkingDirectory = root; link.Save(); } finally { Marshal.FinalReleaseComObject(link); } } finally { Marshal.FinalReleaseComObject(shell); }
+        Assert(InstalledApps.ReadShortcut(legacyPath).Arguments == "--legacy \"quoted argument\"");
         var item = InstalledApps.FromPath(path); Assert(item.Kind == TargetKind.Shortcut && item.Arguments == "" && item.Target == path); return Task.CompletedTask;
     }
     private static async Task Discovery() { var apps = await InstalledApps.ReadAsync(); Assert(apps.Count > 0 && apps.Any(a => a.CanLaunch)); Console.WriteLine($"  discovered {apps.Count} entries; Store: {apps.Count(a => a.Kind == TargetKind.StoreApp)}"); }

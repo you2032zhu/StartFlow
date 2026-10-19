@@ -188,7 +188,10 @@ internal static class Program
     {
         var path = Path.Combine(root, "test.lnk"); dynamic shell = Activator.CreateInstance(Type.GetTypeFromProgID("WScript.Shell")!)!;
         try { dynamic link = shell.CreateShortcut(path); try { link.TargetPath = Environment.ProcessPath!; link.Arguments = "--test \"中文 空格\""; link.WorkingDirectory = root; link.Save(); } finally { Marshal.FinalReleaseComObject(link); } } finally { Marshal.FinalReleaseComObject(shell); }
-        var read = InstalledApps.ReadShortcut(path); Assert(read.Arguments == "--test \"中文 空格\"" && read.WorkingDirectory == root); var item = InstalledApps.FromPath(path); Assert(item.Kind == TargetKind.Shortcut && item.Arguments == "" && item.Target == path); return Task.CompletedTask;
+        var read = InstalledApps.ReadShortcut(path);
+        Assert(read.Arguments == "--test \"中文 空格\"", $"Shortcut arguments changed: [{read.Arguments}]");
+        Assert(Core.Validation.NormalizePath(read.WorkingDirectory) == Core.Validation.NormalizePath(root), $"Shortcut working directory changed: expected [{root}], actual [{read.WorkingDirectory}]");
+        var item = InstalledApps.FromPath(path); Assert(item.Kind == TargetKind.Shortcut && item.Arguments == "" && item.Target == path); return Task.CompletedTask;
     }
     private static async Task Discovery() { var apps = await InstalledApps.ReadAsync(); Assert(apps.Count > 0 && apps.Any(a => a.CanLaunch)); Console.WriteLine($"  discovered {apps.Count} entries; Store: {apps.Count(a => a.Kind == TargetKind.StoreApp)}"); }
     private static async Task RealTargets()
